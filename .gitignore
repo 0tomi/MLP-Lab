@@ -5,3 +5,4 @@ __pycache__/
 .pytest_cache/
 .requirements.cksum
 .DS_Store
+local_settings.json

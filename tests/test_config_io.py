@@ -87,6 +87,16 @@ def test_invalid_config_raises_validation_error(mutate, code):
     assert err.value.code == code
 
 
+def test_layers_accept_up_to_512_units_and_reject_513():
+    data = _exported()
+    data["layers"][0]["units"] = 512
+    assert parse_config(json.dumps(data)).config.layers[0].units == 512
+    data["layers"][0]["units"] = 513
+    with pytest.raises(ConfigError) as err:
+        parse_config(json.dumps(data))
+    assert err.value.code == "range"
+
+
 def test_invalid_json_raises_validation_error():
     with pytest.raises(ConfigError) as err:
         parse_config("{not json")

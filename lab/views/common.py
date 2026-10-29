@@ -37,7 +37,7 @@ def key_metric(meta: dict) -> str:
     best = meta["best_epoch"]
     if not values or best > len(values):
         return ""
-    return f"{T.MONITORS_SHORT[monitor]} {values[best - 1]:.3f}"
+    return f"{T.MONITORS_SHORT[monitor]} {values[best - 1]:.3g}"
 
 
 def run_option_label(meta: dict) -> str:

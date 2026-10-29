@@ -16,6 +16,7 @@ from lab.config import (
     L2_VALUES,
     LEARNING_RATES,
     MAX_HIDDEN,
+    MAX_UNITS,
     MONITOR_OPTIONS,
     OPTIMIZERS,
     LayerSpec,
@@ -155,7 +156,7 @@ def validate_config(data) -> ImportedConfig:
         prefix = f"layers[{i}]."
         _object(layer, prefix[:-1])
         _keys(layer, _LAYER_KEYS, (), prefix)
-        units = _int(layer, "units", 1, 64, prefix)
+        units = _int(layer, "units", 1, MAX_UNITS, prefix)
         activation = _choice(layer, "activation", ACTIVATIONS, prefix)
         dropout = _snap_step(_number(layer, "dropout", 0.0, 0.8, prefix), 0.0, 0.05, f"{prefix}dropout", adjusted)
         layers.append(LayerSpec(units, activation, dropout))

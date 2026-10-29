@@ -152,14 +152,23 @@ def metric_curves(history: dict, key: str, title: str | None, best_epoch: int | 
                            font=dict(color=ACCENT, size=12), xanchor="left", yanchor="top", xshift=4)
     fig.update_layout(title=title, height=height, xaxis_title=T.AXIS_EPOCH, hovermode="x unified",
                       margin=dict(t=30 if title is None else 40))
+    if len(history.get(key, [])) <= 10:
+        fig.update_xaxes(dtick=1)  # no fractional epochs on short runs
     return fig
 
 
 # ---------------------------------------------------------------- network diagram
-def _visible(n: int, max_nodes: int) -> list[int | None]:
-    """Indices to draw; None marks the ellipsis."""
+def visible_indices(n: int, max_nodes: int, values: np.ndarray | None = None) -> list[int | None]:
+    """Neuron indices to draw (None marks the ellipsis node).
+
+    Wide layers show max_nodes - 1 neurons: the first and last ones, or, when activations are given,
+    the ones with the largest |activation| (kept in index order, ellipsis last).
+    """
     if n <= max_nodes:
         return list(range(n))
+    if values is not None:
+        top = np.argsort(-np.abs(np.asarray(values).ravel()), kind="stable")[: max_nodes - 1]
+        return sorted(int(i) for i in top) + [None]
     head = max_nodes // 2
     tail = max_nodes - head - 1
     return list(range(head)) + [None] + list(range(n - tail, n))
@@ -177,7 +186,8 @@ def network_diagram(
 ) -> go.Figure:
     """Layers left to right. activations/dropouts describe the hidden layers; output activation is last in activations."""
     n_layers = len(sizes)
-    slots = [_visible(n, max_nodes) for n in sizes]
+    slots = [visible_indices(n, max_nodes, None if node_values is None else node_values[li])
+             for li, n in enumerate(sizes)]
     tallest = max(len(s) for s in slots)
     pos: list[dict[int | None, tuple[float, float]]] = []
     for li, layer_slots in enumerate(slots):
@@ -214,12 +224,13 @@ def network_diagram(
 def _edges(fig, slots, pos, weights) -> None:
     bins: dict[tuple[int, int], tuple[list, list]] = {}
     for li in range(len(slots) - 1):
+        src = [a for a in slots[li] if a is not None]
+        dst = [b for b in slots[li + 1] if b is not None]
         W = weights[li][0] if weights is not None else None
-        scale = float(np.abs(W).max()) + 1e-12 if W is not None else 1.0
-        for a in slots[li]:
-            for b in slots[li + 1]:
-                if a is None or b is None:
-                    continue
+        # widths relative to the largest edge actually drawn, so truncated wide layers stay readable
+        scale = float(np.abs(W[np.ix_(src, dst)]).max()) + 1e-12 if W is not None else 1.0
+        for a in src:
+            for b in dst:
                 if W is None:
                     key = (0, 0)
                 else:

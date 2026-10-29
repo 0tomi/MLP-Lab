@@ -10,7 +10,7 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
-from lab import registry
+from lab import registry, settings
 from lab import text as T
 from lab.config import MAX_HIDDEN, LayerSpec, TrainConfig
 from lab.config_io import DatasetSpec, ImportedConfig
@@ -62,6 +62,9 @@ def init_state() -> None:
     """Seed defaults and keep widget values alive even when their widget is not drawn."""
     for key, value in DEFAULTS.items():
         st.session_state[key] = st.session_state.get(key, value)
+    if "live_boundary_max_params" not in st.session_state:
+        st.session_state["live_boundary_max_params"] = settings.load_live_boundary_max_params(settings_path())
+    st.session_state["live_boundary_max_params"] = st.session_state["live_boundary_max_params"]
     if "pending_active" in st.session_state:
         st.session_state["active_run_id"] = st.session_state.pop("pending_active")
     if "pending_import" in st.session_state:
@@ -208,6 +211,11 @@ def _load(path: str) -> registry.LoadedRun:
 
 def saved_runs() -> list[registry.RunInfo]:
     return registry.list_runs(models_dir())
+
+
+def settings_path() -> Path:
+    """local_settings.json, overridable through session state (tests)."""
+    return Path(st.session_state.get("settings_path", settings.SETTINGS_PATH))
 
 
 def models_dir() -> Path:

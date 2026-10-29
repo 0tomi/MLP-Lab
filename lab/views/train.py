@@ -8,10 +8,21 @@ import streamlit as st
 
 from lab import charts
 from lab import text as T
-from lab.config import BATCH_SIZES, L2_VALUES, LEARNING_RATES, MONITOR_OPTIONS, OPTIMIZERS, architecture_label
+from lab.config import (
+    BATCH_SIZES,
+    L2_VALUES,
+    LEARNING_RATES,
+    MONITOR_OPTIONS,
+    OPTIMIZERS,
+    architecture_label,
+    count_parameters,
+    layer_sizes_of,
+    should_draw_live_boundary,
+)
 from lab.config_io import config_to_dict
 from lab.separability import linear_regression_baseline
-from lab.state import DataContext, active_run, current_config, dataset_spec, models_dir, separability
+from lab.settings import LIVE_BOUNDARY_LIMIT_MAX, save_live_boundary_max_params
+from lab.state import DataContext, active_run, current_config, dataset_spec, models_dir, separability, settings_path
 from lab.views.common import (
     arch_label,
     dataset_label,
@@ -45,6 +56,12 @@ def _settings() -> bool:
         clicked = st.button(T.TRAIN_BUTTON, type="primary", width="stretch", icon=":material/play_arrow:")
     with st.expander(T.TRAIN_LOSS_EXPLAIN_TITLE):
         st.markdown(T.TRAIN_LOSS_EXPLAIN.format(loss=T.LOSS_NAMES[task]))
+    with st.expander(T.TRAIN_ADVANCED, icon=":material/tune:"):
+        st.number_input(T.TRAIN_LIVE_LIMIT, 0, LIVE_BOUNDARY_LIMIT_MAX, step=5_000, key="live_boundary_max_params",
+                        help=T.HELP["live_limit"])
+        if st.button(T.TRAIN_SAVE_DEFAULT, icon=":material/save:"):
+            save_live_boundary_max_params(s["live_boundary_max_params"], settings_path())
+            st.toast(T.TRAIN_SAVED_DEFAULT)
     return clicked
 
 
@@ -94,7 +111,12 @@ def _train_live(ctx: DataContext) -> None:
     boundary_ph = None
     if show_boundary:
         _heading(T.TRAIN_BOUNDARY_TITLE if config.task == "classification" else T.TRAIN_CURVE_TITLE)
-        boundary_ph = st.empty()
+        n_params = count_parameters(layer_sizes_of(n_features, config.layers))
+        if should_draw_live_boundary(n_params, st.session_state["live_boundary_max_params"]):
+            boundary_ph = st.empty()
+        else:  # drawn once from the saved model after the rerun that follows training
+            params = f"{n_params:,}".replace(",", T.THOUSANDS_SEP)
+            st.caption(T.TRAIN_BOUNDARY_DEFERRED.format(params=params, what=T.TRAIN_DEFERRED_WHAT[config.task]))
 
     history: dict[str, list[float]] = {}
     live = {"last": 0.0, "best": None, "best_epoch": None}

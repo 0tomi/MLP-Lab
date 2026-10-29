@@ -133,6 +133,11 @@ HELP = {
         "época (sigue marcada en el gráfico)."
     ),
     "refresh": "Redibuja la frontera de decisión cada N épocas.",
+    "live_limit": (
+        "Rendimiento: con más parámetros que este límite, la frontera (o la curva ajustada) se dibuja solo al "
+        "terminar el entrenamiento; las curvas de loss siguen en vivo. 0 la dibuja siempre solo al final. "
+        "No forma parte de la configuración del modelo."
+    ),
     "threshold": "Probabilidad a partir de la cual un punto se predice como clase positiva.",
     "loss_chart": (
         "Las dos curvas bajan: todavía aprende. Las dos altas y planas: subajuste (prueba una red más grande o más "
@@ -174,6 +179,7 @@ ARCH_UNITS = "Neuronas"
 ARCH_ACTIVATION = "Activación"
 ARCH_DROPOUT = "Dropout"
 ARCH_PARAMS = "Parámetros entrenables"
+THOUSANDS_SEP = "\u202f"  # narrow no-break space: 527 361
 ARCH_FORMULA_HELP = "Cada neurona tiene un peso por entrada más un sesgo (bias): Σ (nℓ · nℓ₋₁ + nℓ)."
 ARCH_OUTPUT = {
     "classification": "Salida: 1 neurona sigmoide → probabilidad de la clase 1. Loss: entropía cruzada binaria.",
@@ -219,6 +225,12 @@ TRAIN_DIVERGED = "El entrenamiento divergió (la loss dio NaN o infinito). Baja 
 TRAIN_LOSS_TITLE = "Loss"
 TRAIN_BOUNDARY_TITLE = "Frontera de decisión"
 TRAIN_CURVE_TITLE = "Curva ajustada"
+TRAIN_BOUNDARY_DEFERRED = "Red grande ({params} parámetros): la {what} se dibuja al terminar el entrenamiento."
+TRAIN_ADVANCED = "Avanzado"
+TRAIN_LIVE_LIMIT = "Límite de parámetros para la frontera en vivo"
+TRAIN_SAVE_DEFAULT = "Guardar como predeterminado en esta máquina"
+TRAIN_SAVED_DEFAULT = "Guardado en local_settings.json."
+TRAIN_DEFERRED_WHAT = {"classification": "frontera", "regression": "curva"}
 TRAIN_EMPTY = "Pulsa Entrenar para empezar. Las curvas se actualizan en vivo."
 TRAIN_SHOWING = "Modelo activo: {label}"
 TRAIN_LOSS_EXPLAIN_TITLE = "¿Qué se está optimizando?"
@@ -293,7 +305,8 @@ TRY_NETWORK = "Dentro de la red"
 TRY_NETWORK_HELP = (
     "Color del nodo: activación de cada neurona para esta entrada (azul positivo, naranja negativo, escalado por "
     "capa; en una salida sigmoide, azul es cerca de 1 y naranja cerca de 0). Pasa el mouse para ver el valor. "
-    "Color de la arista: signo del peso. Grosor: magnitud del peso."
+    "Color de la arista: signo del peso. Grosor: magnitud del peso. En capas de más de 12 neuronas se muestran "
+    "las 11 con mayor |activación| para esta entrada; «⋮ +N» cuenta las ocultas."
 )
 TRY_POINT = "tu entrada"
 

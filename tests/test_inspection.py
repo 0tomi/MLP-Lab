@@ -38,6 +38,16 @@ def test_sub_model_output_matches_predict_for_regression():
     np.testing.assert_allclose(acts[-1], model.predict(ds.X, verbose=0), rtol=0, atol=1e-6)
 
 
+def test_sub_model_output_matches_predict_with_512_wide_layers():
+    ds = make_dataset("moons", n_samples=100, noise=0.2, seed=0)
+    model = build_model(2, _config("classification", [LayerSpec(512, "relu", 0.3), LayerSpec(512, "tanh")]))
+
+    acts = forward_activations(model, ds.X)
+
+    assert [a.shape[1] for a in acts] == [2, 512, 512, 1]
+    np.testing.assert_allclose(acts[-1], model.predict(ds.X, verbose=0), rtol=0, atol=1e-6)
+
+
 def test_output_layer_depends_on_task():
     clf = build_model(2, _config("classification", [LayerSpec(3, "relu")]))
     reg = build_model(2, _config("regression", [LayerSpec(3, "relu")]))

@@ -13,7 +13,7 @@ Laboratorio interactivo para aprender a entrenar perceptrones multicapa (MLP) de
 - Estandarización activable o desactivable.
 
 **Arquitectura**
-- De 0 a 4 capas ocultas, cada una con 1 a 64 neuronas.
+- De 0 a 4 capas ocultas, cada una con 1 a 512 neuronas.
 - Activación por capa: lineal, sigmoide, tanh, ReLU, leaky ReLU o ELU.
 - Dropout por capa (0–0.8).
 - Regularización L2 (desactivada o de 1e-5 a 0.1).
@@ -47,5 +47,7 @@ Laboratorio interactivo para aprender a entrenar perceptrones multicapa (MLP) de
 ```
 
 La primera vez crea `.venv` e instala las dependencias; después abre el lab en http://localhost:8501.
+
+Por rendimiento, la frontera de decisión en vivo se omite en redes de más de 15 000 parámetros (por defecto); el límite se cambia en Entrenamiento → Avanzado.
 
 Dependencias principales: Streamlit, Keras con TensorFlow (CPU), scikit-learn y Plotly.

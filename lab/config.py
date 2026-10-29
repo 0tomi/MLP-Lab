@@ -13,6 +13,18 @@ LEARNING_RATES = (0.0001, 0.0003, 0.001, 0.003, 0.01, 0.03, 0.1, 0.3, 1.0)
 BATCH_SIZES = (1, 8, 16, 32, 64, 128, 256)
 L2_VALUES = (0.0, 1e-5, 1e-4, 1e-3, 1e-2, 1e-1)
 MAX_HIDDEN = 4
+MAX_UNITS = 512
+
+# Default limit: above this many parameters the decision boundary / fitted curve is drawn only when
+# training ends. Conservative for average machines; override per machine in local_settings.json or the UI.
+# Measured on a fast machine: one redraw costs ~8 ms at 1k params, ~18 ms at 67k, ~36 ms at 265k and
+# ~57 ms at 527k (plus ~220 KB sent to the browser), against ~65-75 ms per training epoch.
+LIVE_BOUNDARY_MAX_PARAMS = 15_000
+
+
+def should_draw_live_boundary(n_params: int, max_params: int) -> bool:
+    """0 means the boundary is always drawn only at the end."""
+    return 0 < max_params and n_params <= max_params
 
 # monitor name -> EarlyStopping mode
 MONITOR_OPTIONS: dict[str, dict[str, str]] = {

@@ -6,7 +6,7 @@ import streamlit as st
 
 from lab import charts
 from lab import text as T
-from lab.config import ACTIVATIONS, MAX_HIDDEN, count_parameters, layer_sizes_of, output_spec
+from lab.config import ACTIVATIONS, MAX_HIDDEN, MAX_UNITS, count_parameters, layer_sizes_of, output_spec
 from lab.state import DataContext, current_layers
 from lab.views import config_panel
 from lab.views.common import show
@@ -21,7 +21,7 @@ def render(ctx: DataContext | None) -> None:
             with st.container(border=True):
                 st.markdown(f"**{T.ARCH_LAYER.format(i=i)}**")
                 a, b, c = st.columns([1, 1.2, 1.2])
-                a.number_input(T.ARCH_UNITS, 1, 64, step=1, key=f"units_{i}", help=T.HELP["units"])
+                a.number_input(T.ARCH_UNITS, 1, MAX_UNITS, step=1, key=f"units_{i}", help=T.HELP["units"])
                 b.selectbox(T.ARCH_ACTIVATION, ACTIVATIONS, format_func=T.ACTIVATIONS.get, key=f"act_{i}",
                             help=T.HELP["activation"])
                 c.slider(T.ARCH_DROPOUT, 0.0, 0.8, step=0.05, key=f"drop_{i}", help=T.HELP["dropout"])
@@ -33,8 +33,9 @@ def render(ctx: DataContext | None) -> None:
     with right:
         total = count_parameters(sizes)
         terms = " + ".join(f"{n}·{prev}+{n}" for prev, n in zip(sizes[:-1], sizes[1:]))
-        st.metric(T.ARCH_PARAMS, f"{total:,}", help=T.ARCH_FORMULA_HELP)
-        st.caption(f"Σ (nℓ·nℓ₋₁ + nℓ) = {terms} = {total:,}")
+        total_text = f"{total:,}".replace(",", T.THOUSANDS_SEP)
+        st.metric(T.ARCH_PARAMS, total_text, help=T.ARCH_FORMULA_HELP)
+        st.caption(f"Σ (nℓ·nℓ₋₁ + nℓ) = {terms} = {total_text}")
         activations = [layer.activation for layer in layers] + [output_spec(task)[0]]
         dropouts = [layer.dropout for layer in layers]
         show(charts.network_diagram(sizes, activations, dropouts, feature_names), key="arch_diagram")

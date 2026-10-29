@@ -13,6 +13,7 @@ APP = str(Path(__file__).resolve().parent.parent / "app.py")
 def app(tmp_path):
     at = AppTest.from_file(APP, default_timeout=180)
     at.session_state["models_dir"] = str(tmp_path)
+    at.session_state["settings_path"] = str(tmp_path / "local_settings.json")  # never the real file
     return at
 
 
@@ -80,3 +81,21 @@ def test_full_training_without_early_stopping_and_reusing_a_saved_config(app, tm
     assert not app.exception
     assert app.session_state["n_hidden"] == 2
     assert app.session_state["drop_2"] == 0.1
+
+
+def test_training_a_wide_512_network_on_moons(app, tmp_path):
+    app.run()
+    for key, value in {"dataset_classification": "moons", "n_hidden": 2, "units_1": 512, "units_2": 512,
+                       "act_1": "relu", "act_2": "relu", "epochs": 10, "refresh": 2}.items():
+        app.session_state[key] = value
+    app.run()
+    next(b for b in app.button if b.label == T.TRAIN_BUTTON).click()
+    app.run()
+
+    assert not app.exception
+    meta = list_runs(Path(tmp_path))[0].meta
+    assert meta["architecture"] == "2-512(relu)-512(relu)-1"
+    assert meta["epochs_run"] == 10
+    # large net: no live boundary, but the final one is drawn after training
+    assert any(m.value == f"**{T.TRAIN_BOUNDARY_TITLE}**" for m in app.markdown)
+    assert any(c.proto.id.endswith("saved_boundary") or "saved_boundary" in c.proto.id for c in app.get("plotly_chart"))
