@@ -80,6 +80,7 @@ SPLITS = {"train": "Entrenamiento", "val": "Validación", "test": "Test"}
 HISTORY_TITLE = "Modelos guardados"
 HISTORY_HELP = "Se guardan en disco los últimos 5 modelos entrenados. Elige uno para verlo en Resultados y Probar."
 HISTORY_EMPTY = "Todavía no hay modelos. Entrena uno en el paso 3."
+THEME_HINT = ":material/dark_mode: Tema claro/oscuro: menú ⋮ (arriba a la derecha) → Settings."
 
 # ---------------------------------------------------------------- data
 DATA_TASK = "Tarea"

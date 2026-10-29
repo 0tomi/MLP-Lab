@@ -2,12 +2,14 @@
 
 import streamlit as st
 
+from lab import charts
 from lab import text as T
 from lab.state import active_run, current_data, init_state
 from lab.views import architecture, data, sidebar, train
 
 st.set_page_config(page_title=T.APP_TITLE, page_icon=":material/hub:", layout="wide")
 init_state()
+charts.use_theme(st.context.theme.type)  # Plotly follows the light/dark theme chosen in the app menu
 
 st.title(T.APP_TITLE, anchor=False)
 st.caption(T.APP_TAGLINE)

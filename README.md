@@ -50,4 +50,6 @@ La primera vez crea `.venv` e instala las dependencias; después abre el lab en 
 
 Por rendimiento, la frontera de decisión en vivo se omite en redes de más de 15 000 parámetros (por defecto); el límite se cambia en Entrenamiento → Avanzado.
 
+Tema claro/oscuro desde el menú ⋮ → Settings (también sigue al sistema).
+
 Dependencias principales: Streamlit, Keras con TensorFlow (CPU), scikit-learn y Plotly.

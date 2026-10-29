@@ -1,22 +1,37 @@
+# Shared by both themes; colours live in [theme.light] / [theme.dark] (keep in sync with lab/charts.py PALETTES).
 [theme]
-base = "light"
+baseRadius = "10px"
+font = "Figtree:https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap, sans-serif"
+headingFont = "Fraunces:https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap, serif"
+codeFont = "monospace"
+
+[theme.light]
 primaryColor = "#3F6E9A"
 backgroundColor = "#FAF8F4"
 secondaryBackgroundColor = "#F1EDE5"
 textColor = "#26293B"
 borderColor = "#E3DDD1"
 linkColor = "#3F6E9A"
-baseRadius = "10px"
-font = "Figtree:https://fonts.googleapis.com/css2?family=Figtree:wght@400;500;600;700&display=swap, sans-serif"
-headingFont = "Fraunces:https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap, serif"
-codeFont = "monospace"
 chartCategoricalColors = ["#3F6E9A", "#D9825B", "#5E9E7E", "#9C7BB5", "#C9A646"]
 
-[theme.sidebar]
+[theme.light.sidebar]
 backgroundColor = "#F1EDE5"
+
+[theme.dark]
+primaryColor = "#4A7FB3"
+backgroundColor = "#16181F"
+secondaryBackgroundColor = "#20232D"
+textColor = "#E6E2DA"
+borderColor = "#2E3240"
+linkColor = "#8FB4DA"
+chartCategoricalColors = ["#73A0CC", "#E8956E", "#7DBE9C", "#B79AD0", "#D9BC63"]
+
+[theme.dark.sidebar]
+backgroundColor = "#1C1F28"
 
 [browser]
 gatherUsageStats = false
 
 [client]
-toolbarMode = "minimal"
+# "viewer" keeps the menu's theme switch (Light / Dark / System) while hiding developer options.
+toolbarMode = "viewer"
