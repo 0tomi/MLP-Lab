@@ -1,0 +1,7 @@
+.venv/
+models/
+__pycache__/
+*.pyc
+.pytest_cache/
+.requirements.cksum
+.DS_Store
